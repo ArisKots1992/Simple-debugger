@@ -1,0 +1,77 @@
+#!/bin/bash
+
+./picodb readfile < data.txt > OUTPUT
+
+command=`wc -m /etc/services`		#find the original number of words
+word=($command)
+real_letters=${word[0]}
+
+while read line
+	do
+		str1="stdout"
+		arr=($line)					#elenxos an einai oi leksis swstes(prepei na to elenksw ke apo to read kai apo to fread
+		if [ "${arr[1]}" == "$str1" ] ; then		#bres to arxio(panta proto thane to read ke meta to fread)
+			#echo ${arr[2]}				#echo stdout(onoma arxiou)
+			read line2 < ${arr[2]}
+			arr2=($line2)
+			count_from_pr=${arr2[1]}
+			if [ "${arr2[1]}" == "$real_letters" ] ; then
+				echo Correct Letter Number in ${arr[2]} = $real_letters
+			fi
+		fi
+		
+	done < "data.txt"
+
+read_sys_read=0
+read_sys_close=0;
+read_sys_open=0;
+
+fread_sys_read=0
+fread_sys_close=0;
+fread_sys_open=0;
+
+boolian=0
+
+sys_read="SYS_read"
+sys_close="SYS_close"
+sys_open="SYS_open"
+final="FINAL"
+
+while read Line
+	do
+		array=($Line)
+		if [ "$boolian" -eq 0 ] ; then
+			if [ "${array[0]}" == "$final" ] ; then			#edw katalabenei oti teliwse to read kai pame gia fread
+				boolian=1
+			fi
+			if [ "${array[0]}" == "$sys_read" ] ; then
+				let "read_sys_read = read_sys_read + 1"	
+                        elif [ "${array[0]}" == "$sys_close" ] ; then
+                                let "read_sys_close = read_sys_close + 1"
+                        elif [ "${array[0]}" == "$sys_open" ] ; then
+                                let "read_sys_open = read_sys_open + 1"
+                        fi
+		elif [ "$boolian" -eq 1 ] ; then
+                        if [ "${array[0]}" == "$sys_read" ] ; then
+                                let "fread_sys_read = fread_sys_read + 1"
+                        elif [ "${array[0]}" == "$sys_close" ] ; then
+                                let "fread_sys_close = fread_sys_close + 1"
+                        elif [ "${array[0]}" == "$sys_open" ] ; then
+                                let "fread_sys_open = fread_sys_open + 1"
+                        fi
+		fi
+	done < OUTPUT
+
+#DOWN here i print the results!
+
+gain=0
+let "gain = (read_sys_read - fread_sys_read) * 100 / read_sys_read"
+
+
+echo "_______________________________________________________"         
+echo "     |"  read method "|"    fread method  "| "   gain%
+echo "open |     "$read_sys_open"       |      "$fread_sys_open"       |    "0
+echo "read |    "$read_sys_read"    |      "$fread_sys_read"       |    "$gain
+echo "close|     "$read_sys_close"       |      "$fread_sys_close"       |    "0
+
+

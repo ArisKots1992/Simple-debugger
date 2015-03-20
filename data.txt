@@ -1,0 +1,9 @@
+t all
+b off
+r stdout output_read
+r stdin input_read
+go
+r stdout output_fread
+r stdin input_fread
+go
+quit
