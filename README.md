@@ -42,4 +42,8 @@ CLI_functions.o : CLI_functions.cpp header.h
 clean :	
 	rm -f picodb main.o functions.o CLI_functions.o OUTPUT output_read output_fread
 ```
-
+CLI_functions.cpp : all needed functions for help,redirect,trace,block etc.
+main.cpp : CLI Input commands
+header.cpp : defines & includes & functions headers.
+functions.cpp : contains the “go” functions that execute the original picodb
+Makefile : Dynamic Makefile & clean
